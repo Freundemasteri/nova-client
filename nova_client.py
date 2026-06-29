@@ -145,14 +145,14 @@ class NovaClientApp(ctk.CTk):
             # Eine vorgefertigte Client-ID für eine generische Roblox-Presence.
             # Sobald du im Discord Developer Portal eine eigene App mit deinem Nova-Logo erstellst, 
             # tauschen wir diese ID gegen deine persönliche aus!
-            client_id = "1139265217805172827" 
+            client_id = "1521033831015252010" 
             self.rpc = Presence(client_id)
             self.rpc.connect()
             self.rpc.update(
                 state="Boosting Roblox Performance",
                 details="Using Nova Client Premium",
                 start=time.time(),
-                large_image="roblox", # Standard-Asset Name
+                large_image="nova_logo", # Standard-Asset Name
                 large_text="Nova Client v1.0"
             )
         except Exception:

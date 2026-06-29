@@ -1,95 +1,182 @@
 import os
 import json
 import subprocess
+import threading
 import customtkinter as ctk
 from tkinter import messagebox
+from pypresence import Presence
+import time
 
-# NOVA BRANDING COLOR PALETTE (Passend zum Logo)
-DARK_BG = "#0A0A0A"       # Tiefschwarz für den Hintergrund
-CARD_BG = "#141414"       # Etwas helleres Schwarz für Boxen
-NOVA_RED = "#D31212"      # Das aggressive Nova-Rot für Buttons
-NOVA_HOVER = "#960B0B"    # Dunkleres Rot für den Hover-Effekt
-TEXT_WHITE = "#FFFFFF"    # Reines Weiß für Titel
-TEXT_GRAY = "#888888"     # Grau für Untertitel
+# NOVA BRANDING COLOR PALETTE
+DARK_BG = "#0A0A0A"
+CARD_BG = "#141414"
+NOVA_RED = "#D31212"
+NOVA_HOVER = "#960B0B"
+TEXT_WHITE = "#FFFFFF"
+TEXT_GRAY = "#888888"
 
-ctk.set_appearance_mode("Dark") 
+# SPRACH-WÖRTERBUCH (Deutsch & Englisch)
+TRANSLATIONS = {
+    "DE": {
+        "title": "Nova Client - Premium Utility",
+        "subtitle": "MAXIMALER PERFORMANCE ACCELERATOR",
+        "btn_perf": "ULTRA PERFORMANCE AKTIVIEREN",
+        "btn_launch": "ROBLOX ÜBER NOVA STARTEN",
+        "btn_discord": "STATUS DISCORD SERVER",
+        "status_ready": "SYSTEM STATUS: BEREIT ZUM FLIEGEN",
+        "status_engaged": "SYSTEM STATUS: ULTRA PERFORMANCE AKTIVIERT",
+        "status_roblox": "SYSTEM STATUS: ROBLOX AKTIV",
+        "err_roblox": "Roblox nicht gefunden!",
+        "success_perf": "Ultra Performance erfolgreich injiziert!",
+        "err_launch": "Roblox konnte nicht gestartet werden."
+    },
+    "EN": {
+        "title": "Nova Client - Premium Utility",
+        "subtitle": "MAXIMUM PERFORMANCE ACCELERATOR",
+        "btn_perf": "ACTIVATE ULTRA PERFORMANCE",
+        "btn_launch": "LAUNCH ROBLOX VIA NOVA",
+        "btn_discord": "STATUS DISCORD SERVER",
+        "status_ready": "SYSTEM STATUS: READY TO FLY",
+        "status_engaged": "SYSTEM STATUS: NOVA ULTRA PERFORMANCE ENGAGED",
+        "status_roblox": "SYSTEM STATUS: ROBLOX ACTIVE",
+        "err_roblox": "Roblox not found!",
+        "success_perf": "Ultra Performance successfully injected!",
+        "err_launch": "Roblox could not be started."
+    }
+}
 
 class NovaClientApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
+        self.current_lang = "DE" # Standard-Sprache auf Deutsch setzen
+        
+        # DISCORD RICH PRESENCE STARTEN (Im Hintergrund, damit die App nicht laggt)
+        self.rpc = None
+        threading.Thread(target=self.init_discord_rpc, daemon=True).start()
+
         # Fenster-Einstellungen
-        self.title("Nova Client - Premium Utility")
-        self.geometry("550x400")
+        self.title("Nova Client")
+        self.geometry("580x460")
         self.resizable(False, False)
         self.configure(fg_color=DARK_BG)
 
-        # Haupt-Container für das moderne "Card"-Design
+        # Haupt-Container
         self.main_frame = ctk.CTkFrame(self, fg_color=CARD_BG, corner_radius=15, border_width=1, border_color="#222222")
-        self.main_frame.pack(pady=25, padx=25, fill="both", expand=True)
+        self.main_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
-        # Titel-Label (Nova Red)
+        # SPRACH-AUSWAHL DROPDOWN (Oben rechts)
+        self.lang_switch = ctk.CTkOptionMenu(
+            self.main_frame,
+            values=["DE", "EN"],
+            command=self.change_language,
+            fg_color="#222222",
+            button_color=NOVA_RED,
+            button_hover_color=NOVA_HOVER,
+            dropdown_fg_color=CARD_BG,
+            width=70,
+            height=25
+        )
+        self.lang_switch.place(relx=0.95, rely=0.05, anchor="ne")
+
+        # Titel-Label
         self.title_label = ctk.CTkLabel(
             self.main_frame, 
             text="NOVA CLIENT", 
             font=ctk.CTkFont(family="Impact", size=36, weight="bold"),
             text_color=NOVA_RED
         )
-        self.title_label.pack(pady=(20, 2))
+        self.title_label.pack(pady=(25, 2))
 
         # Untertitel
         self.subtitle_label = ctk.CTkLabel(
             self.main_frame, 
-            text="MAXIMUM PERFORMANCE ACCELERATOR", 
+            text="", 
             font=ctk.CTkFont(family="Arial", size=11, weight="bold"),
             text_color=TEXT_GRAY
         )
-        self.subtitle_label.pack(pady=(0, 15))
+        self.subtitle_label.pack(pady=(0, 10))
 
-        # Trennlinie mit Glüheffekt-Farbe
-        self.line = ctk.CTkFrame(self.main_frame, height=2, width=400, fg_color="#333333")
+        # Trennlinie
+        self.line = ctk.CTkFrame(self.main_frame, height=2, width=420, fg_color="#333333")
         self.line.pack(pady=10)
 
-        # Button 1: Ultra Performance (Jetzt in Nova-Rot)
+        # Button 1: Ultra Performance
         self.fps_btn = ctk.CTkButton(
-            self.main_frame, 
-            text="ACTIVATE ULTRA PERFORMANCE", 
-            command=self.enable_fps_unlocker, 
+            self.main_frame, text="", command=self.enable_fps_unlocker, 
             font=ctk.CTkFont(family="Arial", size=13, weight="bold"),
-            fg_color=NOVA_RED,
-            hover_color=NOVA_HOVER,
-            text_color=TEXT_WHITE,
-            corner_radius=8,
-            width=320, 
-            height=45
+            fg_color=NOVA_RED, hover_color=NOVA_HOVER, text_color=TEXT_WHITE,
+            corner_radius=8, width=340, height=45
         )
-        self.fps_btn.pack(pady=15)
+        self.fps_btn.pack(pady=10)
 
-        # Button 2: Roblox starten (Dezenteres Design, das sich einfügt)
+        # Button 2: Roblox starten
         self.start_btn = ctk.CTkButton(
-            self.main_frame, 
-            text="LAUNCH ROBLOX VIA NOVA", 
-            command=self.start_roblox, 
+            self.main_frame, text="", command=self.start_roblox, 
             font=ctk.CTkFont(family="Arial", size=13, weight="bold"),
-            fg_color="#222222", 
-            hover_color="#333333",
-            text_color=TEXT_WHITE,
-            border_width=1,
-            border_color=NOVA_RED,
-            corner_radius=8,
-            width=320, 
-            height=45
+            fg_color="#222222", hover_color="#333333", text_color=TEXT_WHITE,
+            border_width=1, border_color=NOVA_RED, corner_radius=8, width=340, height=45
         )
         self.start_btn.pack(pady=10)
 
-        # Status-Anzeige im edlen Look
+        # Button 3: Discord Server (Für Status / Lags)
+        self.discord_btn = ctk.CTkButton(
+            self.main_frame, text="", command=self.open_discord_server, 
+            font=ctk.CTkFont(family="Arial", size=12, weight="bold"),
+            fg_color="#18191c", hover_color="#2f3136", text_color=TEXT_WHITE,
+            border_width=1, border_color="#5865F2", corner_radius=8, width=340, height=40
+        )
+        self.discord_btn.pack(pady=10)
+
+        # Status-Anzeige
         self.status_label = ctk.CTkLabel(
-            self.main_frame, 
-            text="SYSTEM STATUS: READY TO FLY", 
+            self.main_frame, text="", 
             font=ctk.CTkFont(family="Arial", size=10, weight="bold"),
             text_color=TEXT_GRAY
         )
         self.status_label.pack(side="bottom", pady=15)
+
+        # Texte initialisieren
+        self.update_ui_text()
+
+    def init_discord_rpc(self):
+        """Verbindet den Client mit Discord für die Rich Presence"""
+        try:
+            # Eine vorgefertigte Client-ID für eine generische Roblox-Presence.
+            # Sobald du im Discord Developer Portal eine eigene App mit deinem Nova-Logo erstellst, 
+            # tauschen wir diese ID gegen deine persönliche aus!
+            client_id = "1139265217805172827" 
+            self.rpc = Presence(client_id)
+            self.rpc.connect()
+            self.rpc.update(
+                state="Boosting Roblox Performance",
+                details="Using Nova Client Premium",
+                start=time.time(),
+                large_image="roblox", # Standard-Asset Name
+                large_text="Nova Client v1.0"
+            )
+        except Exception:
+            # Falls Discord nicht geöffnet ist, läuft das Programm einfach normal weiter
+            pass
+
+    def change_language(self, choice):
+        self.current_lang = choice
+        self.update_ui_text()
+
+    def update_ui_text(self):
+        lang = TRANSLATIONS[self.current_lang]
+        self.title(lang["title"])
+        self.subtitle_label.configure(text=lang["subtitle"])
+        self.fps_btn.configure(text=lang["btn_perf"])
+        self.start_btn.configure(text=lang["btn_launch"])
+        self.discord_btn.configure(text=lang["btn_discord"])
+        self.status_label.configure(text=lang["status_ready"])
+
+    def open_discord_server(self):
+        """Öffnet deinen zukünftigen Discord Server im Browser"""
+        # Ersetze diesen Link später einfach durch deinen echten Discord-Einladungslink!
+        import webbrowser
+        webbrowser.open("https://discord.gg/DEIN_SERVER_LINK")
 
     def get_roblox_path(self):
         local_app_data = os.getenv('LOCALAPPDATA')
@@ -102,9 +189,10 @@ class NovaClientApp(ctk.CTk):
         return None
 
     def enable_fps_unlocker(self):
+        lang = TRANSLATIONS[self.current_lang]
         roblox_path = self.get_roblox_path()
         if not roblox_path:
-            messagebox.showerror("Fehler", "Roblox nicht gefunden!")
+            messagebox.showerror("Error", lang["err_roblox"])
             return
 
         settings_dir = os.path.join(roblox_path, "ClientSettings")
@@ -127,19 +215,25 @@ class NovaClientApp(ctk.CTk):
         try:
             with open(settings_file, "w") as f:
                 json.dump(fflags_data, f, indent=4)
-            self.status_label.configure(text="SYSTEM STATUS: NOVA ULTRA PERFORMANCE ENGAGED", text_color=NOVA_RED)
-            messagebox.showinfo("Nova Client", "Ultra Performance erfolgreich injiziert!")
+            self.status_label.configure(text=lang["status_engaged"], text_color=NOVA_RED)
+            
+            # Discord Status aktualisieren bei Aktivierung
+            if self.rpc:
+                self.rpc.update(state="Performance: MAXED OUT", details="Nova Client Ultra", start=time.time())
+                
+            messagebox.showinfo("Nova Client", lang["success_perf"])
         except Exception as e:
-            messagebox.showerror("Fehler", f"Fehler: {e}")
+            messagebox.showerror("Error", f"Error: {e}")
 
     def start_roblox(self):
+        lang = TRANSLATIONS[self.current_lang]
         roblox_path = self.get_roblox_path()
         if roblox_path:
             executable = os.path.join(roblox_path, "RobloxPlayerBeta.exe")
             subprocess.Popen([executable])
-            self.status_label.configure(text="SYSTEM STATUS: ROBLOX ACTIVE", text_color="#00FF00")
+            self.status_label.configure(text=lang["status_roblox"], text_color="#00FF00")
         else:
-            messagebox.showerror("Fehler", "Roblox konnte nicht gestartet werden.")
+            messagebox.showerror("Error", lang["err_launch"])
 
 if __name__ == "__main__":
     app = NovaClientApp()

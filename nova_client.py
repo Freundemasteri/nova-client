@@ -188,3 +188,20 @@ class NovaClientApp(ctk.CTk):
             with open(settings_file, "w") as f:
                 json.dump(fflags_data, f, indent=4)
             self.status_label.configure(text=lang["status_engaged"], text_color=NOVA_RED)
+            messagebox.showinfo("Nova Client", lang["success_perf"])
+        except Exception as e:
+            messagebox.showerror("Error", f"Error: {e}")
+
+    def start_roblox(self):
+        lang = TRANSLATIONS[self.current_lang]
+        roblox_path = self.get_roblox_path()
+        if roblox_path:
+            executable = os.path.join(roblox_path, "RobloxPlayerBeta.exe")
+            subprocess.Popen([executable])
+            self.status_label.configure(text=lang["status_roblox"], text_color="#00FF00")
+        else:
+            messagebox.showerror("Error", lang["err_launch"])
+
+if __name__ == "__main__":
+    app = NovaClientApp()
+    app.mainloop()

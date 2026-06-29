@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Client | Premium Roblox Utility</title>
+    <style>
+        /* Modern Gaming Web Design */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0A0A0A;
+            color: #FFFFFF;
+            overflow-x: hidden;
+        }
+
+        /* Background Glow Effect */
+        .glow-bg {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(211, 18, 18, 0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+        }
+
+        /* Header Section */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .logo {
+            width: 280px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(211, 18, 18, 0.3);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.03);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: #D31212;
+            text-shadow: 0 0 15px rgba(211, 18, 18, 0.6);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #888888;
+            max-width: 600px;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Glowing Download Button */
+        .download-btn {
+            display: inline-block;
+            padding: 18px 45px;
+            background-color: #D31212;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 25px rgba(211, 18, 18, 0.5);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .download-btn:hover {
+            background-color: #960B0B;
+            box-shadow: 0 0 35px rgba(211, 18, 18, 0.8);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .feature-box {
+            background-color: #141414;
+            border: 1px solid #222222;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-box:hover {
+            border-color: #D31212;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-box h3 {
+            color: #D31212;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-box p {
+            color: #AAAAAA;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555555;
+            font-size: 0.9rem;
+            border-top: 1px solid #141414;
+            margin-top: 60px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+
+    <header>
+        <!-- Logo -->
+        <img src="logo.jpg" alt="Nova Client Logo" class="logo">
+        
+        <h1><span class="highlight">NOVA</span> CLIENT</h1>
+        <p class="subtitle">The ultimate, safe performance booster for Roblox</p>
+        
+        <!-- LINK TO EXE & DOWNLOAD ATTRIBUTE -->
+        <a href="nova_client.exe" download="Nova_Client.exe" class="download-btn">Download Now</a>
+    </header>
+
+    <section class="features-container">
+        <div class="feature-box">
+            <h3>🚀 Ultra FPS Unlocker</h3>
+            <p>Completely bypass Roblox's default 60 FPS cap. Maximize your framerate up to 240+ FPS for ultimate smoothness.</p>
+        </div>
+        <div class="feature-box">
+            <h3>⚡ Zero Input Lag</h3>
+            <p>Optimized network and texture loading rates ensure your in-game actions respond instantly without annoying delays.</p>
+        </div>
+        <div class="feature-box">
+            <h3>🔒 100% Safe & Clean</h3>
+            <p>No injectors, no viruses. Nova Client strictly modifies official Windows & Roblox FastFlags. Fully banproof.</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 Nova Client. Developed by Lenny. All Rights Reserved.<br>
+        <span style="font-size: 0.8rem; color: #333333;">This utility is not affiliated with Roblox Corporation.</span>
+    </footer>
+
+</body>
+</html>

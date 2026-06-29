@@ -51,7 +51,7 @@ class NovaClientApp(ctk.CTk):
 
         self.current_lang = "DE" # Standard-Sprache auf Deutsch setzen
         
-        # DISCORD RICH PRESENCE STARTEN (Im Hintergrund, damit die App nicht laggt)
+        # DISCORD RICH PRESENCE STARTEN (Im Hintergrund)
         self.rpc = None
         threading.Thread(target=self.init_discord_rpc, daemon=True).start()
 
@@ -65,7 +65,7 @@ class NovaClientApp(ctk.CTk):
         self.main_frame = ctk.CTkFrame(self, fg_color=CARD_BG, corner_radius=15, border_width=1, border_color="#222222")
         self.main_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
-        # SPRACH-AUSWAHL DROPDOWN (Oben rechts)
+        # SPRACH-AUSWAHL DROPDOWN
         self.lang_switch = ctk.CTkOptionMenu(
             self.main_frame,
             values=["DE", "EN"],
@@ -140,23 +140,24 @@ class NovaClientApp(ctk.CTk):
         self.update_ui_text()
 
     def init_discord_rpc(self):
-        """Verbindet den Client mit Discord für die Rich Presence"""
+        """Verbindet den Client mit deiner persönlichen Discord-App"""
         try:
-            # Eine vorgefertigte Client-ID für eine generische Roblox-Presence.
-            # Sobald du im Discord Developer Portal eine eigene App mit deinem Nova-Logo erstellst, 
-            # tauschen wir diese ID gegen deine persönliche aus!
+            # Deine eigene Application ID!
             client_id = "1521033831015252010" 
             self.rpc = Presence(client_id)
             self.rpc.connect()
+            
+            # Lädt dein Logo und zeigt deinen Status
             self.rpc.update(
-                state="Boosting Roblox Performance",
-                details="Using Nova Client Premium",
+                state="Using Nova Client Premium",
+                details="Boosting Performance (240 FPS+)",
                 start=time.time(),
-                large_image="nova_logo", # Standard-Asset Name
-                large_text="Nova Client v1.0"
+                large_image="nova_logo",  # Dein Logo-Key aus dem Portal
+                large_text="Nova Client v1.0",
+                small_image="roblox",     # Roblox Icon
+                small_text="Optimized Matrix"
             )
         except Exception:
-            # Falls Discord nicht geöffnet ist, läuft das Programm einfach normal weiter
             pass
 
     def change_language(self, choice):
@@ -173,9 +174,9 @@ class NovaClientApp(ctk.CTk):
         self.status_label.configure(text=lang["status_ready"])
 
     def open_discord_server(self):
-        """Öffnet deinen zukünftigen Discord Server im Browser"""
-        # Ersetze diesen Link später einfach durch deinen echten Discord-Einladungslink!
+        """Öffnet deinen Discord Server Link im Browser"""
         import webbrowser
+        # Sobald du deinen Server hast, fügst du hier den Link ein!
         webbrowser.open("https://discord.gg/DEIN_SERVER_LINK")
 
     def get_roblox_path(self):
@@ -217,9 +218,13 @@ class NovaClientApp(ctk.CTk):
                 json.dump(fflags_data, f, indent=4)
             self.status_label.configure(text=lang["status_engaged"], text_color=NOVA_RED)
             
-            # Discord Status aktualisieren bei Aktivierung
             if self.rpc:
-                self.rpc.update(state="Performance: MAXED OUT", details="Nova Client Ultra", start=time.time())
+                self.rpc.update(
+                    state="Performance: MAXED OUT", 
+                    details="Nova Client Ultra", 
+                    start=time.time(),
+                    large_image="nova_logo"
+                )
                 
             messagebox.showinfo("Nova Client", lang["success_perf"])
         except Exception as e:

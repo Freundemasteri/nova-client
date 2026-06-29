@@ -1,11 +1,8 @@
 import os
 import json
 import subprocess
-import threading
 import customtkinter as ctk
 from tkinter import messagebox
-from pypresence import Presence
-import time
 
 # NOVA BRANDING COLOR PALETTE
 DARK_BG = "#0A0A0A"
@@ -50,10 +47,6 @@ class NovaClientApp(ctk.CTk):
         super().__init__()
 
         self.current_lang = "DE" # Standard-Sprache auf Deutsch setzen
-        
-        # DISCORD RICH PRESENCE STARTEN (Im Hintergrund)
-        self.rpc = None
-        threading.Thread(target=self.init_discord_rpc, daemon=True).start()
 
         # Fenster-Einstellungen
         self.title("Nova Client")
@@ -139,27 +132,6 @@ class NovaClientApp(ctk.CTk):
         # Texte initialisieren
         self.update_ui_text()
 
-    def init_discord_rpc(self):
-        """Verbindet den Client mit deiner persönlichen Discord-App"""
-        try:
-            # Deine eigene Application ID!
-            client_id = "1521033831015252010" 
-            self.rpc = Presence(client_id)
-            self.rpc.connect()
-            
-            # Lädt dein Logo und zeigt deinen Status
-            self.rpc.update(
-                state="Using Nova Client Premium",
-                details="Boosting Performance (240 FPS+)",
-                start=time.time(),
-                large_image="nova_logo",  # Dein Logo-Key aus dem Portal
-                large_text="Nova Client v1.0",
-                small_image="roblox",     # Roblox Icon
-                small_text="Optimized Matrix"
-            )
-        except Exception:
-            pass
-
     def change_language(self, choice):
         self.current_lang = choice
         self.update_ui_text()
@@ -176,7 +148,6 @@ class NovaClientApp(ctk.CTk):
     def open_discord_server(self):
         """Öffnet deinen Discord Server Link im Browser"""
         import webbrowser
-        # Sobald du deinen Server hast, fügst du hier den Link ein!
         webbrowser.open("https://discord.gg/DEIN_SERVER_LINK")
 
     def get_roblox_path(self):
@@ -217,29 +188,3 @@ class NovaClientApp(ctk.CTk):
             with open(settings_file, "w") as f:
                 json.dump(fflags_data, f, indent=4)
             self.status_label.configure(text=lang["status_engaged"], text_color=NOVA_RED)
-            
-            if self.rpc:
-                self.rpc.update(
-                    state="Performance: MAXED OUT", 
-                    details="Nova Client Ultra", 
-                    start=time.time(),
-                    large_image="nova_logo"
-                )
-                
-            messagebox.showinfo("Nova Client", lang["success_perf"])
-        except Exception as e:
-            messagebox.showerror("Error", f"Error: {e}")
-
-    def start_roblox(self):
-        lang = TRANSLATIONS[self.current_lang]
-        roblox_path = self.get_roblox_path()
-        if roblox_path:
-            executable = os.path.join(roblox_path, "RobloxPlayerBeta.exe")
-            subprocess.Popen([executable])
-            self.status_label.configure(text=lang["status_roblox"], text_color="#00FF00")
-        else:
-            messagebox.showerror("Error", lang["err_launch"])
-
-if __name__ == "__main__":
-    app = NovaClientApp()
-    app.mainloop()
